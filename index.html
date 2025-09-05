@@ -1,310 +1,262 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>おうちレストラン</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
   <style>
-    /* ==============================
-       GLOBAL STYLES & THEME SETUP
-       ============================== */
-    body {
-      font-family: 'Press Start 2P', cursive; /* Retro pixel font */
-      background: #f5f5f5;
-      color: #222;
-      margin: 0;
-      padding: 20px;
-      line-height: 1.5;
-      background-image: linear-gradient(#ddd 1px, transparent 1px),
-                        linear-gradient(90deg, #ddd 1px, transparent 1px);
-      background-size: 20px 20px; /* Pixel grid effect */
+    :root{
+      --ink:#0b0f14;
+      --bg:#f7f7ef;
+      --panel:#ffffff;
+      --blue:#1d4ed8;
+      --blue-2:#0b3ea8;
+      --gold:#fbbf24;
+      --grid:#e6e2cc;
+      --focus:#1d4ed8;
+      --success:#22c55e;
+      --danger:#ef4444;
     }
+    body.hc{
+      --bg:#ffffff; --panel:#ffffff;
+      --blue:#1438b8; --blue-2:#0b2a88;
+      --gold:#ffcc00; --grid:#e0e0e0;
+    }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background:
+        repeating-linear-gradient(0deg, var(--grid) 0 2px, transparent 2px 24px),
+        repeating-linear-gradient(90deg, var(--grid) 0 2px, transparent 2px 24px),
+        var(--bg);
+      color:var(--ink);
+      font-family:'Press Start 2P', monospace;
+      line-height:1.6; letter-spacing:0.5px;
+    }
+    .wrap{ max-width:720px; margin:0 auto; padding:16px 12px 120px; }
+    .title{ display:flex; gap:8px; align-items:center; justify-content:center; margin:16px 0 8px; font-size:18px; }
+    .tbar{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:16px; }
+    .btn{
+      appearance:none; border:none; background:var(--blue); color:#fff;
+      padding:14px 16px; border:3px solid var(--blue-2);
+      box-shadow:4px 4px 0 var(--blue-2);
+      font:inherit; font-size:12px; border-radius:6px; cursor:pointer;
+      transition:transform .02s ease-in;
+    }
+    .btn:active{ transform:translate(2px,2px); box-shadow:2px 2px 0 var(--blue-2); }
+    .btn.alt{ background:var(--gold); color:#000; border-color:#c58f00; box-shadow:4px 4px 0 #c58f00; }
+    .btn.success{ background:var(--success); border-color:#15803d; box-shadow:4px 4px 0 #15803d; }
+    .btn.danger{ background:var(--danger); border-color:#991b1b; box-shadow:4px 4px 0 #991b1b; }
 
-    /* Buttons */
-    button {
-      font-family: inherit;
-      padding: 10px;
-      border: 3px solid #222;
-      background: #fff;
-      cursor: pointer;
-      box-shadow: 4px 4px #222;
-      margin: 4px;
-    }
-    button:active {
-      box-shadow: 2px 2px #222;
-      transform: translate(2px,2px);
-    }
+    .panel{ background:var(--panel); border:4px solid var(--ink); box-shadow:6px 6px 0 var(--ink); padding:12px; margin:16px 0; border-radius:10px; }
+    .section-title{ display:flex; align-items:center; gap:8px; margin:0 0 10px; font-size:14px; color:var(--blue-2); }
 
-    /* Panels for each section */
-    .panel {
-      border: 4px solid #222;
-      padding: 10px;
-      margin-bottom: 20px;
-      background: #fff;
-    }
+    .menu{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    @media (max-width:520px){ .menu{ grid-template-columns:1fr; } }
+    .card{ border:3px solid var(--blue-2); border-radius:10px; padding:10px; background:linear-gradient(0deg, rgba(255,255,255,.9), rgba(255,255,255,.9)), var(--panel); }
 
-    h1,h2 {
-      font-size: 16px;
+    .item{
+      display:flex; align-items:center; justify-content:space-between; gap:8px;
+      margin:8px 0 0; padding:12px; border:2px dashed var(--blue-2);
+      border-radius:10px; background:#fff; cursor:pointer; user-select:none; touch-action:manipulation;
     }
+    .item:hover{ background:#f3f7ff; }
+    .item:focus{ outline:3px dashed var(--focus); outline-offset:3px; }
+    .label{ display:flex; align-items:center; gap:8px; font-size:12px; }
+    .badge{ min-width:28px; height:28px; display:inline-grid; place-items:center; background:var(--gold); color:#000; border:2px solid #c58f00; border-radius:6px; font-size:12px; }
 
-    /* Menu items container */
-    .menu {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .card {
-      border: 3px solid #222;
-      padding: 8px;
-      background: #e0e0e0;
-      flex: 1 0 150px;
-    }
+    .order-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px; margin:8px 0 0; border:2px solid var(--ink); border-radius:10px; background:#fff; }
+    .qty{ display:flex; align-items:center; gap:6px; }
+    .qty button{ width:32px; height:32px; font:inherit; font-size:14px; border:2px solid var(--ink); background:var(--gold); border-radius:6px; cursor:pointer; }
 
-    /* Individual menu item (clickable) */
-    .item {
-      display: flex;
-      justify-content: space-between;
-      margin: 6px 0;
-      cursor: pointer;
-      border: 2px dashed transparent;
-      padding: 2px;
-    }
-    .item:focus {
-      outline: none;
-      border-color: #222;
-      background: #ff0;
-    }
-    .badge {
-      background: #222;
-      color: #fff;
-      padding: 2px 4px;
-      font-size: 10px;
-    }
+    .muted{ font-size:11px; opacity:.8; }
+    .row{ display:flex; align-items:center; gap:8px; justify-content:space-between; flex-wrap:wrap; margin-top:10px; }
+    input.note{ width:100%; padding:12px; border:2px solid var(--ink); border-radius:8px; font:inherit; font-size:12px; }
+    .status{ margin-top:8px; font-size:12px; }
 
-    /* Cart list */
-    .cart-list {
-      list-style: none;
-      padding: 0;
-    }
-    .cart-list li {
-      margin: 4px 0;
-    }
-
-    /* High Contrast Mode */
-    .contrast {
-      background: #000;
-      color: #0f0;
-    }
-    .contrast button {
-      background: #000;
-      color: #0f0;
-      border-color: #0f0;
-      box-shadow: 4px 4px #0f0;
-    }
+    :focus-visible{ outline:3px dashed var(--focus); outline-offset:3px; }
+    @media (prefers-reduced-motion: reduce){ .btn, .btn:active{ transition:none; box-shadow:none; transform:none; } }
   </style>
 </head>
 <body>
-  <!-- ==============================
-       HEADER SECTION
-       ============================== -->
-  <header class="panel">
-    <h1>🍴 おうちレストラン</h1>
-    <button id="hcBtn" aria-pressed="false">高コントラスト切替</button>
-  </header>
+  <div class="wrap">
+    <div class="title">🍽️ おうちレストラン · ピクセル版</div>
 
-  <!-- ==============================
-       MENU SECTION: MAINS
-       Each item has data-name and optional data-cat
-       ============================== -->
-  <section class="panel" aria-labelledby="mainsTitle">
-    <h2 id="mainsTitle">🍚 メイン</h2>
-    <div class="menu">
-      <div class="card" aria-label="メイン1">
-        <div class="item" tabindex="0" data-name="冷凍チャーハン" data-cat="main"><span class="label">🍳 冷凍チャーハン</span><span class="badge">＋</span></div>
-        <div class="item" tabindex="0" data-name="焼きそば" data-cat="main"><span class="label">🥢 焼きそば</span><span class="badge">＋</span></div>
-      </div>
-      <div class="card" aria-label="メイン2">
-        <div class="item" tabindex="0" data-name="オムライス" data-cat="main"><span class="label">🍳 オムライス</span><span class="badge">＋</span></div>
-        <div class="item" tabindex="0" data-name="カレーライス" data-cat="main"><span class="label">🍛 カレーライス</span><span class="badge">＋</span></div>
-      </div>
+    <div class="tbar">
+      <button class="btn" id="hcBtn" aria-pressed="false">視認性アップ</button>
+      <button class="btn alt" id="clearBtn">カートを空にする</button>
     </div>
-  </section>
 
-  <!-- ==============================
-       MENU SECTION: SIDES
-       These are REQUIRED to place an order.
-       data-cat="side" is critical.
-       ============================== -->
-  <section class="panel" aria-labelledby="sidesTitle">
-    <h2 id="sidesTitle">🥗 サイド</h2>
-    <div class="menu">
-      <div class="card" aria-label="サイド1">
-        <div class="item" tabindex="0" data-name="チンゲン菜ガーリック" data-cat="side"><span class="label">🧄 チンゲン菜ガーリック</span><span class="badge">＋</span></div>
-        <div class="item" tabindex="0" data-name="茄子の煮浸し" data-cat="side"><span class="label">🍆 茄子の煮浸し</span><span class="badge">＋</span></div>
-        <div class="item" tabindex="0" data-name="茄子の味噌汁" data-cat="side"><span class="label">🍲 茄子の味噌汁</span><span class="badge">＋</span></div>
+    <!-- MENU: MAINS -->
+    <section class="panel" aria-labelledby="mainsTitle">
+      <h2 id="mainsTitle" class="section-title">🍚 メイン</h2>
+      <div class="menu">
+        <div class="card" aria-label="メイン1">
+          <div class="item" tabindex="0" data-name="ネギトロ丼"><span class="label">🍣 ネギトロ丼</span><span class="badge" aria-hidden="true">＋</span></div>
+          <div class="item" tabindex="0" data-name="ハンバーグライス"><span class="label">🍖 ハンバーグライス</span><span class="badge">＋</span></div>
+          <div class="item" tabindex="0" data-name="唐揚げ定食"><span class="label">🍗 唐揚げ定食</span><span class="badge">＋</span></div>
+          <div class="item" tabindex="0" data-name="明太子パスタ"><span class="label">🍝 明太子パスタ</span><span class="badge">＋</span></div>
+        </div>
+        <div class="card" aria-label="メイン2">
+          <div class="item" tabindex="0" data-name="タコライス"><span class="label">🌮 タコライス</span><span class="badge">＋</span></div>
+          <div class="item" tabindex="0" data-name="春巻き"><span class="label">🥢 春巻き</span><span class="badge">＋</span></div>
+          <div class="item" tabindex="0" data-name="餃子"><span class="label">🥟 餃子</span><span class="badge">＋</span></div>
+          <div class="item" tabindex="0" data-name="麻婆豆腐"><span class="label">🍲 麻婆豆腐</span><span class="badge">＋</span></div>
+        </div>
       </div>
-      <div class="card" aria-label="サイド2">
-        <div class="item" tabindex="0" data-name="プチトマト" data-cat="side"><span class="label">🍅 プチトマト</span><span class="badge">＋</span></div>
-        <div class="item" tabindex="0" data-name="アボカドしょう油" data-cat="side"><span class="label">🥑 アボカドしょう油</span><span class="badge">＋</span></div>
+    </section>
+
+    <!-- MENU: SIDES -->
+    <section class="panel" aria-labelledby="sidesTitle">
+      <h2 id="sidesTitle" class="section-title">🥗 サイド</h2>
+      <div class="menu">
+        <div class="card" aria-label="サイド1">
+          <div class="item" tabindex="0" data-name="チンゲン菜ガーリック"><span class="label">🧄 チンゲン菜ガーリック</span><span class="badge">＋</span></div>
+          <div class="item" tabindex="0" data-name="茄子の煮浸し"><span class="label">🍆 茄子の煮浸し</span><span class="badge">＋</span></div>
+          <div class="item" tabindex="0" data-name="茄子の味噌汁"><span class="label">🍲 茄子の味噌汁</span><span class="badge">＋</span></div>
+        </div>
+        <div class="card" aria-label="サイド2">
+          <div class="item" tabindex="0" data-name="プチトマト"><span class="label">🍅 プチトマト</span><span class="badge">＋</span></div>
+          <div class="item" tabindex="0" data-name="アボカドしょう油"><span class="label">🥑 アボカドしょう油</span><span class="badge">＋</span></div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ==============================
-       MENU SECTION: DRINKS
-       ============================== -->
-  <section class="panel" aria-labelledby="drinksTitle">
-    <h2 id="drinksTitle">🥤 ドリンク</h2>
-    <div class="menu">
-      <div class="card" aria-label="ドリンク">
-        <div class="item" tabindex="0" data-name="コーラ" data-cat="drink"><span class="label">🥤 コーラ</span><span class="badge">＋</span></div>
-        <div class="item" tabindex="0" data-name="お茶" data-cat="drink"><span class="label">🍵 お茶</span><span class="badge">＋</span></div>
+    <!-- MENU: DRINKS -->
+    <section class="panel" aria-labelledby="drinksTitle">
+      <h2 id="drinksTitle" class="section-title">🥤 ドリンク</h2>
+      <div class="menu">
+        <div class="card" aria-label="ドリンク">
+          <div class="item" tabindex="0" data-name="本日のジュース"><span class="label">🧃 本日のジュース</span><span class="badge">＋</span></div>
+          <div class="item" tabindex="0" data-name="本日のお酒"><span class="label">🍶 本日のお酒</span><span class="badge">＋</span></div>
+          <div class="item" tabindex="0" data-name="ビール"><span class="label">🍺 ビール</span><span class="badge">＋</span></div>
+          <div class="item" tabindex="0" data-name="ワイン"><span class="label">🍷 ワイン</span><span class="badge">＋</span></div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ==============================
-       CART SECTION
-       ============================== -->
-  <section class="panel" aria-labelledby="cartTitle">
-    <h2 id="cartTitle">🛒 カート</h2>
-    <ul id="cart" class="cart-list"></ul>
-    <button id="clearBtn">カートを空にする</button>
-  </section>
+    <!-- CART / ORDER -->
+    <section class="panel" aria-labelledby="orderTitle">
+      <h2 id="orderTitle" class="section-title">🛒 カート</h2>
+      <p class="muted">メニューをタップすると追加。数量は下で調整、最後に「注文する」。</p>
+      <div id="live" class="muted" aria-live="polite"></div>
+      <div id="order"></div>
 
-  <!-- ==============================
-       ORDER SECTION
-       ============================== -->
-  <section class="panel" aria-labelledby="orderTitle">
-    <h2 id="orderTitle">📦 注文</h2>
-    <label for="note">メモ:</label><br>
-    <textarea id="note" rows="3" cols="40"></textarea><br>
-    <button id="orderBtn">注文する</button>
-    <p id="status" role="status"></p>
-  </section>
-
-  <!-- ==============================
-       ACCESSIBILITY LIVE REGION
-       Announces updates to screen readers.
-       ============================== -->
-  <div id="live" aria-live="polite" style="position:absolute;left:-9999px;"></div>
+      <div class="row">
+        <input class="note" id="note" placeholder="メモ（例：氷少なめ、辛さ控えめ など）">
+        <button class="btn success" id="orderBtn">注文する</button>
+      </div>
+      <div id="status" class="status"></div>
+    </section>
+  </div>
 
   <script>
-    /* ==============================
-       JAVASCRIPT LOGIC
-       ============================== */
+    // Put your Apps Script Web App URL here:
+    const WEBHOOK_URL = "YOUR_WEB_APP_URL_HERE";
 
-    // DOM references
+    const order = new Map(); // { name -> qty }
+    const orderEl = document.getElementById('order');
+    const live = document.getElementById('live');
     const hcBtn = document.getElementById('hcBtn');
-    const cartEl = document.getElementById('cart');
     const clearBtn = document.getElementById('clearBtn');
     const orderBtn = document.getElementById('orderBtn');
     const noteEl = document.getElementById('note');
     const statusEl = document.getElementById('status');
-    const live = document.getElementById('live');
 
-    // Data structures
-    const order = new Map(); // Keeps track of { name -> quantity }
-    const categories = new Map(); // Keeps track of { name -> category }
-
-    const WEBHOOK_URL = "https://script.google.com/macros/s/YOUR-SCRIPT-ID/exec"; // Replace with your webhook
-
-    // ===============
-    // THEME TOGGLE
-    // ===============
-    hcBtn.addEventListener('click', () => {
-      const pressed = hcBtn.getAttribute('aria-pressed') === 'true';
-      hcBtn.setAttribute('aria-pressed', String(!pressed));
-      document.body.classList.toggle('contrast');
-    });
-
-    // ===============
-    // ADD ITEM HANDLER
-    // ===============
-    function addItem(name, cat){
-      if(cat){ categories.set(name, cat); } // Remember the category for validation
+    function addItem(name){
       const q = order.get(name) || 0;
       order.set(name, q + 1);
       render();
       live.textContent = `${name} を追加（合計 ${order.get(name)}）`;
     }
 
-    // Bind all menu items to add on click/keyboard
+    function changeQty(name, delta){
+      const q = order.get(name) || 0;
+      const nq = q + delta;
+      if(nq <= 0){ order.delete(name); }
+      else{ order.set(name, nq); }
+      render();
+    }
+
+    function render(){
+      orderEl.innerHTML = '';
+      if(order.size === 0){
+        orderEl.innerHTML = '<p class="muted">カートは空です。</p>';
+        return;
+      }
+      order.forEach((qty, name) => {
+        const row = document.createElement('div');
+        row.className = 'order-item';
+        row.innerHTML = `
+          <div class="label">✅ ${name}</div>
+          <div class="qty" role="group" aria-label="${name} の数量">
+            <button aria-label="${name} を減らす">−</button>
+            <strong>${qty}</strong>
+            <button aria-label="${name} を増やす">＋</button>
+          </div>
+        `;
+        const [minusBtn, plusBtn] = row.querySelectorAll('button');
+        minusBtn.addEventListener('click', () => changeQty(name, -1));
+        plusBtn.addEventListener('click', () => changeQty(name, +1));
+        orderEl.appendChild(row);
+      });
+    }
+
+    // Bind menu items (tap to add)
     document.querySelectorAll('.item').forEach(el => {
-      el.addEventListener('click', () => addItem(el.dataset.name, el.dataset.cat));
+      el.addEventListener('click', () => addItem(el.dataset.name));
       el.addEventListener('keydown', (e) => {
         if(e.key === 'Enter' || e.key === ' '){
-          e.preventDefault();
-          addItem(el.dataset.name, el.dataset.cat);
+          e.preventDefault(); addItem(el.dataset.name);
         }
       });
     });
 
-    // ===============
-    // RENDER CART
-    // ===============
-    function render(){
-      cartEl.innerHTML = '';
-      order.forEach((qty,name) => {
-        const li = document.createElement('li');
-        li.textContent = `${name} x ${qty} `;
-
-        // Add (+) button
-        const plus = document.createElement('button');
-        plus.textContent = '+';
-        plus.addEventListener('click', ()=>{ addItem(name, categories.get(name)); });
-
-        // Add (-) button
-        const minus = document.createElement('button');
-        minus.textContent = '-';
-        minus.addEventListener('click', ()=>{
-          const q = order.get(name);
-          if(q>1){ order.set(name,q-1);} else { order.delete(name);} 
-          render();
-        });
-
-        li.appendChild(plus);
-        li.appendChild(minus);
-        cartEl.appendChild(li);
-      });
-    }
+    // High-contrast toggle
+    hcBtn.addEventListener('click', () => {
+      const on = document.body.classList.toggle('hc');
+      hcBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      hcBtn.textContent = on ? '視認性アップ（ON）' : '視認性アップ';
+    });
 
     // Clear cart
-    clearBtn.addEventListener('click', ()=>{ order.clear(); render(); });
+    clearBtn.addEventListener('click', () => {
+      order.clear(); render();
+      live.textContent = 'カートを空にしました。';
+    });
 
-    // ===============
-    // SUBMIT ORDER
-    // ===============
+    // Submit order → send to your webhook
     orderBtn.addEventListener('click', async () => {
       if(order.size === 0){
         statusEl.textContent = 'カートが空です。';
         return;
       }
-
-      // Ensure at least one side item
-      const hasSide = Array.from(order.keys()).some(name => categories.get(name) === "side");
-      if(!hasSide){
-        statusEl.textContent = '⚠️ サイドメニューを少なくとも1つ選んでください。';
-        return;
-      }
-
-      // Prepare payload
       const items = Array.from(order, ([name, qty]) => ({ name, qty }));
       const note = noteEl.value.trim();
 
       statusEl.textContent = '送信中…';
+
       try{
-        await fetch(WEBHOOK_URL, {
+        const res = await fetch(WEBHOOK_URL, {
           method: 'POST',
-          mode: 'no-cors', // For Google Apps Script; otherwise you can remove
+          mode: 'no-cors', // Apps Script will still receive it
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ items, note })
         });
+
         statusEl.textContent = '✅ 注文を送信しました。ありがとうございます！';
         order.clear(); render(); noteEl.value = '';
       }catch(err){
         statusEl.textContent = '❌ 送信に失敗しました。ネットワークを確認してください。';
       }
     });
+
+    // initial render
+    render();
   </script>
 </body>
 </html>
